@@ -1,0 +1,56 @@
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Model</title>
+	<script src="js/lib/three.min.js"></script>
+	<!-- <script src='THREEx.KeyboardState.js'></script> -->
+</head>
+<body>
+
+	<div id="viewport" style="background-color:black;"></div>
+	<script type="text/javascript" charset="utf-8">
+
+		var ship_geom = null;
+
+		function init() {
+
+			var scene = new THREE.Scene(); 
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.getElementById('viewport').appendChild(renderer.domElement);
+			
+			// var ship_geom = new THREE.CubeGeometry(1,1,1);
+			ship_geom.materials.forEach( function( material ) {
+				material.shading = THREE.FlatShading;
+			});
+			var ship = new THREE.Mesh(ship_geom, new THREE.MeshFaceMaterial() );
+			scene.add(ship);
+
+			var amb = new THREE.AmbientLight( 0x333333 );
+			scene.add( amb );
+
+			var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);  
+			camera.position.set( 2,2,2);
+			camera.lookAt( ship.position );
+
+			var light = new THREE.DirectionalLight( 0xffFFFF, 1, 10 ); 
+			light.position.set( 15, 15, 15 );
+			scene.add( light );
+
+			function renderLoop() { 
+				ship.rotation.x += 0.01; 
+				ship.rotation.y += 0.01;  
+				renderer.render(scene, camera); 
+				requestAnimationFrame(renderLoop);  
+			}
+
+			renderLoop();
+		}
+
+
+		var loader = new THREE.JSONLoader;
+		loader.load( "./data/models/lander3.js", function(geom) { ship_geom = geom; init(); }, "./data/textures/" );
+
+	</script>
+</body>
+</html>
