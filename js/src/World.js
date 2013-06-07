@@ -41,21 +41,34 @@ function World() {
 
 	function manageInputs() {
 
-		if( globals.keyboard.pressed("space")) self.ship.thrust();
-		if( globals.keyboard.pressed("left")) shipOrientation.incRoll(-ORIENTATION_INC);
-		if( globals.keyboard.pressed("right")) shipOrientation.incRoll(ORIENTATION_INC);
-		if( globals.keyboard.pressed("up")) shipOrientation.incPitch(ORIENTATION_INC);
-		if( globals.keyboard.pressed("down")) shipOrientation.incPitch(-ORIENTATION_INC);
-		if( globals.keyboard.pressed("d")) shipOrientation.incYaw(-ORIENTATION_INC);
-		if( globals.keyboard.pressed("q")) shipOrientation.incYaw(ORIENTATION_INC);
-		if( globals.keyboard.pressed("a")) self.camera.pitchUp();
-		if( globals.keyboard.pressed("w")) self.camera.pitchDown();
-		
-		if( globals.keyboard.pressed("r")) { 
-			shipOrientation.resetPitchRoll(); 
-			self.ship.recover(); 
-		}
 
+		if( globals.inputmanager.pointerLockEnabled ) {
+			shipOrientation.incRoll(globals.inputmanager.mouseDeltaX * 0.002 );
+			shipOrientation.incPitch( -globals.inputmanager.mouseDeltaY * 0.002 );
+			if( globals.inputmanager.leftMouseButtonDown ) self.ship.thrust();
+			if( globals.inputmanager.rightMouseButtonDown ) { shipOrientation.resetPitchRoll(); self.ship.recover(); }
+			globals.inputmanager.update();
+		}
+		// else {
+			if( globals.inputmanager.keyboard.pressed("left")) shipOrientation.incRoll(-ORIENTATION_INC);
+			if( globals.inputmanager.keyboard.pressed("right")) shipOrientation.incRoll(ORIENTATION_INC);
+			if( globals.inputmanager.keyboard.pressed("up")) shipOrientation.incPitch(ORIENTATION_INC);
+			if( globals.inputmanager.keyboard.pressed("down")) shipOrientation.incPitch(-ORIENTATION_INC);
+			if( globals.inputmanager.keyboard.pressed("space")) self.ship.thrust();
+			if( globals.inputmanager.keyboard.pressed("r")) { shipOrientation.resetPitchRoll(); self.ship.recover(); }
+		// }
+
+
+		if( globals.inputmanager.keyboard.pressed("d")) shipOrientation.incYaw(-ORIENTATION_INC);
+		if( globals.inputmanager.keyboard.pressed("q")) shipOrientation.incYaw(ORIENTATION_INC);
+		if( globals.inputmanager.keyboard.pressed("z")) self.camera.pitchUp();
+		if( globals.inputmanager.keyboard.pressed("s")) self.camera.pitchDown();
+		
+
+
+		if( globals.inputmanager.keyboard.pressed('i')) self.camera.setType( self.camera.FOLLOW );
+		if( globals.inputmanager.keyboard.pressed('o')) self.camera.setType( self.camera.FIRSTPERSON );
+		if( globals.inputmanager.keyboard.pressed('p')) self.camera.setType( self.camera.FIXED );
 	}
 
 	function updateEntities() {

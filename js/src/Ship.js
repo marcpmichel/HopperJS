@@ -31,18 +31,18 @@ function Ship() {
 		this.setDamping( 0.6, 0.9 ); // does work only after adding the object to the scene :/
 	}
 
-	function world2local( vector ) {
+	function local2world( vector ) {
 		var rotation_matrix = new THREE.Matrix4();
 		rotation_matrix.extractRotation(self.matrix);
 		return rotation_matrix.multiplyVector3(vector.clone());
 	}
 
 	this.torque = function( force ) {
-		this.applyTorque( world2local( force ) );
+		this.applyTorque( local2world( force ) );
 	}
 
 	this.thrust = function() {
-		this.applyCentralForce( world2local( THRUST_FORCE ) );
+		this.applyCentralForce( local2world( THRUST_FORCE ) );
 		mainFlameJet.show();
 	}
 

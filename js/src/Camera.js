@@ -2,9 +2,6 @@ define( ["three"], function() {
 
 function Camera() {
 
-	this.FOLLOW = 1;
-	this.RANDOM = 1;
-
 	THREE.PerspectiveCamera.call(this, 75, window.innerWidth/window.innerHeight, 0.1, 1000);
 	this.position.set( 0, 50, 0 );
 	this.lookAt( new THREE.Vector3(0,0,0) );
@@ -20,11 +17,23 @@ function Camera() {
 		this.updateProjectionMatrix();
 	}
 
+	this.FOLLOW = 1;
+	this.FIRSTPERSON = 2;
+	this.FIXED = 3;
+
+	var currentType = this.FOLLOW;
+
 	this.setType = function( cam_type ) {
+		if( cam_type == currentType ) return;
+
+		console.log( "setting camera type to " + cam_type );
+
 		switch(cam_type) {
-			case this.FOLLOW: this.update_func=followCam;
-			case this.RANDOM: this.update_func=randomCam;
+			case this.FOLLOW: this.update_func=followCam; break;
+			case this.FIRSTPERSON: this.update_func=firstPersonCam; break;
+			case this.FIXED: this.update_func=fixedCam; break;
 		}
+		currentType = cam_type;
 	}
 
 	var yaw = 0;
@@ -36,16 +45,9 @@ function Camera() {
 		this.lookAt( obj.position );
 	}
 
-	function rel2world( obj, vector ) {
-		var rotation_matrix = new THREE.Matrix4();
-		rotation_matrix.extractRotation(obj.matrix);
-		return rotation_matrix.multiplyVector3(vector.clone());
-	}
-
 	var BEHIND_DISTANCE = 8.0;
 	function followCam( obj, target_yaw ) {
 
-		// if( obj_yaw==undefined ) yaw = obj.rotation.y; else yaw = obj.yaw;
 		yaw += (target_yaw - yaw)/ELASTICITY;
 
 		this.position.set(
@@ -56,6 +58,12 @@ function Camera() {
 		this.lookAt( obj.position );
 	}
 
+	function firstPersonCam( obj ) {
+		this.position.copy( obj.position );
+		// this.updateMatrix();
+		this.lookAt( obj.localToWorld( new THREE.Vector3(0,0,1)) );
+		// this.lookAt( obj.matrix.multiplyVector3( new THREE.Vector3(0,0,1)));
+	}
 
 	var PITCH_RATE = 0.05;
 	this.pitchDown=function() {

@@ -1,7 +1,7 @@
 'use strict';
 
 // TODO: get rid of these
-var globals = { overlay:null, keyboard:null, assets:null }
+var globals = { overlay:null, keyboard:null, assets:null, inputmanager:null }
 
 require.config({
 	baseUrl: "js",
@@ -28,14 +28,15 @@ require.config({
 require( [
 	"detector",
 	"three",
-	"keyboard_state",
+	// "keyboard_state",
+	"src/InputManager",
 	"physijs",
 	"stats",
 	"src/Assets",
 	"src/World",
 	"src/Camera",
 	"src/Overlay"
-], function( Detector, THREE, KeyboardState, Physijs, Stats, Assets, World, Camera, Overlay ) {
+], function( Detector, THREE, /*KeyboardState*/InputManager, Physijs, Stats, Assets, World, Camera, Overlay ) {
 
 
 
@@ -47,12 +48,14 @@ function init() {
 	Physijs.scripts.worker = APP_PATH + "js/lib/physijs_worker.js";
 	Physijs.scripts.ammo = APP_PATH + "js/lib/ammo.js";
 
-	globals.keyboard = new THREEx.KeyboardState();
+	//globals.keyboard = new THREEx.KeyboardState();
 
 	var renderer = new THREE.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	var canvasContainer = document.getElementById('viewport');
 	canvasContainer.appendChild(renderer.domElement);
+
+	globals.inputmanager = new InputManager(renderer.domElement);
 
 	renderer.shadowMapEnabled = true;
 
@@ -106,7 +109,6 @@ function boot() {
 	globals.assets.loadAll( resources );
 }
 
-// window.onload = boot;
 boot();
 
 }); // ] require
